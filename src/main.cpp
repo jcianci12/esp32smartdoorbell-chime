@@ -10,18 +10,18 @@
 
 ///////////////////////
 /////////////////////screen
-#include "TFT_eSPI.h"
+////#include "TFT_eSPI.h"
 #include <SPI.h>
 #include "WiFi.h"
 // #include <Wire.h>
 #include <Button2.h>
 #include "esp_adc_cal.h"
-TFT_eSPI tft = TFT_eSPI(135, 240); // Invoke custom library
+//TFT_eSPI tft = TFT_eSPI(135, 240); // Invoke custom library
 
 ///////////////////////
 
 ////////////////////TONE
-#include <Tone32.h>
+//#include <Tone32.h>
 #define BUZZER_PIN 16
 #define BUZZER_CHANNEL 0
 ////////////////////////
@@ -129,10 +129,11 @@ static void send_msg(esp_now_msg_t * msg)
 void lcdMessage(String msg)
 {
 
-    tft.fontHeight(2);
-    tft.setRotation(1);
-    tft.fillScreen(TFT_BLACK);
-    tft.drawString(msg, tft.width()/4, tft.height() / 2, 4);  //string,start x,start y, font weight {1;2;4;6;7;8}
+Serial.println(msg);
+    // tft.fontHeight(2);
+    // tft.setRotation(1);
+    // //tft.fillScreen(TFT_BLACK);
+    // tft.drawString(msg, tft.width()/4, tft.height() / 2, 4);  //string,start x,start y, font weight {1;2;4;6;7;8}
 
 }
 static void network_setup(void)
@@ -217,23 +218,23 @@ void setup() {
 setupWifi();
  network_setup();
 Serial.println("Listening...");
-    tft.init();
+    //tft.init();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_D4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_E4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_F4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_G4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_A4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
-  tone(BUZZER_PIN, NOTE_B4, 500, BUZZER_CHANNEL);
-  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // // put your main code here, to run repeatedly:
+  // tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_D4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_E4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_F4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_G4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_A4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  // tone(BUZZER_PIN, NOTE_B4, 500, BUZZER_CHANNEL);
+  // noTone(BUZZER_PIN, BUZZER_CHANNEL);
 }
