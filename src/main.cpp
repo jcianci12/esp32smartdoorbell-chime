@@ -38,7 +38,10 @@
 #define RECEIVER
 #endif
 /////////////////////////////////
-
+//////////////////////////Loop timer
+int period = 1000;
+unsigned long time_now = 0;
+//////////////////////////////////
 static uint8_t broadcast_mac[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 typedef struct __attribute__((packed)) esp_now_msg_t
@@ -144,6 +147,7 @@ static void network_setup(void)
 
   if (esp_now_init() != 0)
   {
+    Serial.println("esp_now_init()!=0");
     return;
   }
 
@@ -222,6 +226,14 @@ Serial.println("Listening...");
 }
 
 void loop() {
+  if (millis() >= time_now + period+1)
+        {
+            time_now += period;
+            Serial.println("core 1 loop");
+        }
+
+
+        
   // // put your main code here, to run repeatedly:
   // tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
   // noTone(BUZZER_PIN, BUZZER_CHANNEL);
