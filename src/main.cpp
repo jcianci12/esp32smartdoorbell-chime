@@ -6,7 +6,7 @@
 /////////////////////////
 /////////////////////auto wifi
 #include <AutoWifi.h>
-    IPAddress ip;
+IPAddress ip;
 
 ///////////////////////
 /////////////////////screen
@@ -30,7 +30,6 @@
 
 ////////////////////////////
 
-
 ////////////////////ESPNOW SETUP
 // SENDER and RECEIVER are arbitrary with ESP-NOW, this is solely for this example
 //#define SENDER
@@ -42,7 +41,7 @@
 int period = 1000;
 unsigned long time_now = 0;
 //////////////////////////////////
-static uint8_t broadcast_mac[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+static uint8_t broadcast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 typedef struct __attribute__((packed)) esp_now_msg_t
 {
@@ -55,32 +54,32 @@ static void handle_error(esp_err_t err)
 {
   switch (err)
   {
-    case ESP_ERR_ESPNOW_NOT_INIT:
-      Serial.println("Not init");
-      break;
+  case ESP_ERR_ESPNOW_NOT_INIT:
+    Serial.println("Not init");
+    break;
 
-    case ESP_ERR_ESPNOW_ARG:
-      Serial.println("Argument invalid");
-      break;
+  case ESP_ERR_ESPNOW_ARG:
+    Serial.println("Argument invalid");
+    break;
 
-    case ESP_ERR_ESPNOW_INTERNAL:
-      Serial.println("Internal error");
-      break;
+  case ESP_ERR_ESPNOW_INTERNAL:
+    Serial.println("Internal error");
+    break;
 
-    case ESP_ERR_ESPNOW_NO_MEM:
-      Serial.println("Out of memory");
-      break;
+  case ESP_ERR_ESPNOW_NO_MEM:
+    Serial.println("Out of memory");
+    break;
 
-    case ESP_ERR_ESPNOW_NOT_FOUND:
-      Serial.println("Peer is not found");
-      break;
+  case ESP_ERR_ESPNOW_NOT_FOUND:
+    Serial.println("Peer is not found");
+    break;
 
-    case ESP_ERR_ESPNOW_IF:
-      Serial.println("Current WiFi interface doesn't match that of peer");
-      break;
+  case ESP_ERR_ESPNOW_IF:
+    Serial.println("Current WiFi interface doesn't match that of peer");
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 
@@ -97,25 +96,25 @@ static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
   }
 }
 
-static void msg_send_cb(const uint8_t* mac, esp_now_send_status_t sendStatus)
+static void msg_send_cb(const uint8_t *mac, esp_now_send_status_t sendStatus)
 {
 
   switch (sendStatus)
   {
-    case ESP_NOW_SEND_SUCCESS:
-      Serial.println("Send success");
-      break;
+  case ESP_NOW_SEND_SUCCESS:
+    Serial.println("Send success");
+    break;
 
-    case ESP_NOW_SEND_FAIL:
-      Serial.println("Send Failure");
-      break;
+  case ESP_NOW_SEND_FAIL:
+    Serial.println("Send Failure");
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 
-static void send_msg(esp_now_msg_t * msg)
+static void send_msg(esp_now_msg_t *msg)
 {
   // Pack
   uint16_t packet_size = sizeof(esp_now_msg_t);
@@ -132,12 +131,11 @@ static void send_msg(esp_now_msg_t * msg)
 void lcdMessage(String msg)
 {
 
-Serial.println(msg);
-    // tft.fontHeight(2);
-    // tft.setRotation(1);
-    // //tft.fillScreen(TFT_BLACK);
-    // tft.drawString(msg, tft.width()/4, tft.height() / 2, 4);  //string,start x,start y, font weight {1;2;4;6;7;8}
-
+  Serial.println(msg);
+  // tft.fontHeight(2);
+  // tft.setRotation(1);
+  // //tft.fillScreen(TFT_BLACK);
+  // tft.drawString(msg, tft.width()/4, tft.height() / 2, 4);  //string,start x,start y, font weight {1;2;4;6;7;8}
 }
 static void network_setup(void)
 {
@@ -179,61 +177,65 @@ static void network_setup(void)
   }
 }
 
-void setupWifi(){
-   WiFi.mode(WIFI_STA);
+void setupWifi()
+{
+  WiFi.mode(WIFI_STA);
 
-    AutoWifi a;
+  AutoWifi a;
 
 #ifdef FACTORYRESET_BUTTON
-    pinMode(FACTORYRESET_BUTTON, INPUT);
-    if (!digitalRead(FACTORYRESET_BUTTON)) // 1 means not pressed
-        a.resetProvisioning();
+  pinMode(FACTORYRESET_BUTTON, INPUT);
+  if (!digitalRead(FACTORYRESET_BUTTON)) // 1 means not pressed
+    a.resetProvisioning();
 #endif
 
-    if (!a.isProvisioned())
-        lcdMessage("Setup wifi!");
-    else
-        lcdMessage(String("join ") + a.getSSID());
+  if (!a.isProvisioned())
+    lcdMessage("Setup wifi!");
+  else
+    lcdMessage(String("join ") + a.getSSID());
 
-    a.startWifi();
+  a.startWifi();
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        Serial.print(F("."));
-    }
-    ip = WiFi.localIP();
-    Serial.println(F("WiFi connected"));
-    Serial.println(ip);
-    lcdMessage(ip.toString());
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(F("."));
+  }
+  ip = WiFi.localIP();
+  Serial.println(F("WiFi connected"));
+  Serial.println(ip);
+  lcdMessage(ip.toString());
 }
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
- lcdMessage("booting");
+  lcdMessage("booting");
 
-    Serial.begin(115200);
-    while (!Serial)
-    {
-        ;
-    }
+  Serial.begin(115200);
+  while (!Serial)
+  {
+    ;
+  }
 
-setupWifi();
- network_setup();
-Serial.println("Listening...");
-    //tft.init();
+  setupWifi();
+  network_setup();
+  Serial.println("Listening...");
+  //tft.init();
 }
 
-void loop() {
-  if (millis() >= time_now + period+1)
-        {
-            time_now += period;
-            Serial.println("core 1 loop");
-        }
+void loop()
+{
+  if (millis() >= time_now + period + 1)
+  {
+    time_now += period;
+    Serial.println("core 1 loop");
+        Serial.println("Wifi Channel is:");
+            Serial.println(WiFi.channel());
 
 
-        
+  }
+
   // // put your main code here, to run repeatedly:
   // tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
   // noTone(BUZZER_PIN, BUZZER_CHANNEL);
