@@ -21,7 +21,7 @@ IPAddress ip;
 ///////////////////////
 
 ////////////////////TONE
-//#include <Tone32.h>
+#include "Tone32.h"
 #define BUZZER_PIN 16
 #define BUZZER_CHANNEL 0
 ////////////////////////
@@ -49,6 +49,25 @@ typedef struct __attribute__((packed)) esp_now_msg_t
   uint32_t counter;
   // Can put lots of things here...
 } esp_now_msg_t;
+
+static void playTone(){
+  Serial.println("play tone");
+   // put your main code here, to run repeatedly:
+  tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_D4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_E4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_F4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_G4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_A4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+  tone(BUZZER_PIN, NOTE_B4, 500, BUZZER_CHANNEL);
+  noTone(BUZZER_PIN, BUZZER_CHANNEL);
+}
 
 static void handle_error(esp_err_t err)
 {
@@ -92,6 +111,7 @@ static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
 
     Serial.print("Counter: ");
     Serial.println(msg.counter);
+    playTone();
     //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
   }
 }
@@ -223,6 +243,8 @@ void setup()
   Serial.println("Listening...");
   //tft.init();
 }
+
+
 
 void loop()
 {
