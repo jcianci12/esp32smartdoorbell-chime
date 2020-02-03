@@ -25,6 +25,7 @@ IPAddress ip;
 #define BUZZER_PIN 16
 #define BUZZER_CHANNEL 0
 ////////////////////////
+#define FACTORYRESET_BUTTON 35
 
 ///////////////////////Screen Setup
 
@@ -111,7 +112,7 @@ static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
 
     Serial.print("Counter: ");
     Serial.println(msg.counter);
-    playTone();
+    //playTone();
     //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
   }
 }
@@ -251,7 +252,7 @@ void loop()
   if (millis() >= time_now + period + 1)
   {
     time_now += period;
-    Serial.println("core 1 loop");
+    Serial.println("core 1 loop on reciever");
         Serial.println("Wifi Channel is:");
             Serial.println(WiFi.channel());
 
