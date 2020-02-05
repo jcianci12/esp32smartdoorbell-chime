@@ -102,7 +102,29 @@ static void handle_error(esp_err_t err)
     break;
   }
 }
+static void send_msg(esp_now_msg_t *msg)
+{
+  // Pack
+  uint16_t packet_size = sizeof(esp_now_msg_t);
+  uint8_t msg_data[packet_size];
+  memcpy(&msg_data[0], msg, sizeof(esp_now_msg_t));
 
+  esp_err_t status = esp_now_send(broadcast_mac, msg_data, packet_size);
+  if (ESP_OK != status)
+  {
+    Serial.println("Error sending message");
+    handle_error(status);
+  }
+  Serial.println("Message sent!");
+}
+void message(){
+          static uint32_t counter = 0;
+          esp_now_msg_t msg;
+          msg.address = 0;
+          msg.counter = ++counter;
+          send_msg(&msg);
+          //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+}
 static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
 {
   if (len == sizeof(esp_now_msg_t))
@@ -114,6 +136,9 @@ static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
     Serial.println(msg.counter);
     //playTone();
     //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+        message();
+        
+
   }
 }
 
@@ -135,20 +160,7 @@ static void msg_send_cb(const uint8_t *mac, esp_now_send_status_t sendStatus)
   }
 }
 
-static void send_msg(esp_now_msg_t *msg)
-{
-  // Pack
-  uint16_t packet_size = sizeof(esp_now_msg_t);
-  uint8_t msg_data[packet_size];
-  memcpy(&msg_data[0], msg, sizeof(esp_now_msg_t));
 
-  esp_err_t status = esp_now_send(broadcast_mac, msg_data, packet_size);
-  if (ESP_OK != status)
-  {
-    Serial.println("Error sending message");
-    handle_error(status);
-  }
-}
 void lcdMessage(String msg)
 {
 
@@ -249,12 +261,12 @@ void setup()
 
 void loop()
 {
-  if (millis() >= time_now + period + 1)
+  if (millis() >= time_now + 200 + 1)
   {
     time_now += period;
-    Serial.println("core 1 loop on reciever");
-        Serial.println("Wifi Channel is:");
-            Serial.println(WiFi.channel());
+    //Serial.println("core 1 loop on reciever");
+        Serial.print("1.");
+            //Serial.println(WiFi.channel());
 
 
   }
