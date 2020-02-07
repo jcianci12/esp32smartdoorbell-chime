@@ -29,7 +29,7 @@ WebServer server(80);
 
 ////////////////////TONE
 #include "Tone32.h"
-#define BUZZER_PIN 16
+#define BUZZER_PIN 22
 #define BUZZER_CHANNEL 0
 ////////////////////////
 #define FACTORYRESET_BUTTON 35
