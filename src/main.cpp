@@ -51,9 +51,10 @@ typedef struct __attribute__((packed)) esp_now_msg_t
   // Can put lots of things here...
 } esp_now_msg_t;
 
-static void playTone(){
+static void playTone()
+{
   Serial.println("play tone");
-   // put your main code here, to run repeatedly:
+  // put your main code here, to run repeatedly:
   tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
   noTone(BUZZER_PIN, BUZZER_CHANNEL);
   tone(BUZZER_PIN, NOTE_D4, 500, BUZZER_CHANNEL);
@@ -117,13 +118,14 @@ static void send_msg(esp_now_msg_t *msg)
   }
   Serial.println("Message sent!");
 }
-void message(){
-          static uint32_t counter = 0;
-          esp_now_msg_t msg;
-          msg.address = 0;
-          msg.counter = ++counter;
-          send_msg(&msg);
-          //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+void message()
+{
+  static uint32_t counter = 0;
+  esp_now_msg_t msg;
+  msg.address = 0;
+  msg.counter = ++counter;
+  send_msg(&msg);
+  //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
 }
 static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
 {
@@ -136,9 +138,7 @@ static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
     Serial.println(msg.counter);
     //playTone();
     //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-        message();
-        
-
+    message();
   }
 }
 
@@ -159,7 +159,6 @@ static void msg_send_cb(const uint8_t *mac, esp_now_send_status_t sendStatus)
     break;
   }
 }
-
 
 void lcdMessage(String msg)
 {
@@ -212,6 +211,10 @@ static void network_setup(void)
 
 void setupWifi()
 {
+  WiFi.disconnect(true); // disconnects STA Mode
+  delay(1000);
+  WiFi.softAPdisconnect(true); // disconnects AP Mode
+  delay(1000);
   WiFi.mode(WIFI_STA);
 
   AutoWifi a;
@@ -257,18 +260,15 @@ void setup()
   //tft.init();
 }
 
-
-
 void loop()
 {
-  if (millis() >= time_now + 200 + 1)
+  if (millis() >= time_now + 1000 + 1)
   {
     time_now += period;
     //Serial.println("core 1 loop on reciever");
-        Serial.print("1.");
-            //Serial.println(WiFi.channel());
-
-
+    Serial.print("1.");
+    message();
+    //Serial.println(WiFi.channel());
   }
 
   // // put your main code here, to run repeatedly:
