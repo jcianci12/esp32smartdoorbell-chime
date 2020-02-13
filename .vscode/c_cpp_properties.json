@@ -207,7 +207,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=40101",
+                "PLATFORMIO=40200",
                 "ARDUINO_ESP32_DEV",
                 "ESP32",
                 "ESP_PLATFORM",
@@ -223,7 +223,11 @@
             "intelliSenseMode": "clang-x64",
             "cStandard": "c99",
             "cppStandard": "c++11",
-            "compilerPath": "\"C:/Users/jon/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-gcc.exe\" -mlongcalls"
+            "compilerPath": "C:/Users/jon/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-gcc.exe",
+            "compilerArgs": [
+                "-mlongcalls",
+                ""
+            ]
         }
     ],
     "version": 4
