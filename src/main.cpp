@@ -7,6 +7,13 @@
 /////////////////////auto wifi
 #include <AutoWifi.h>
 IPAddress ip;
+///////////////////////
+#include <WiFiClient.h>
+#include <WebServer.h>
+
+#include <HTTPClient.h>
+
+WebServer server(80);
 
 ///////////////////////
 /////////////////////screen
@@ -22,7 +29,7 @@ IPAddress ip;
 
 ////////////////////TONE
 #include "Tone32.h"
-#define BUZZER_PIN 16
+#define BUZZER_PIN 22
 #define BUZZER_CHANNEL 0
 ////////////////////////
 #define FACTORYRESET_BUTTON 35
@@ -31,13 +38,7 @@ IPAddress ip;
 
 ////////////////////////////
 
-////////////////////ESPNOW SETUP
-// SENDER and RECEIVER are arbitrary with ESP-NOW, this is solely for this example
-//#define SENDER
-#ifndef SENDER
-#define RECEIVER
-#endif
-/////////////////////////////////
+
 //////////////////////////Loop timer
 int period = 1000;
 unsigned long time_now = 0;
@@ -71,94 +72,7 @@ static void playTone()
   noTone(BUZZER_PIN, BUZZER_CHANNEL);
 }
 
-static void handle_error(esp_err_t err)
-{
-  switch (err)
-  {
-  case ESP_ERR_ESPNOW_NOT_INIT:
-    Serial.println("Not init");
-    break;
 
-  case ESP_ERR_ESPNOW_ARG:
-    Serial.println("Argument invalid");
-    break;
-
-  case ESP_ERR_ESPNOW_INTERNAL:
-    Serial.println("Internal error");
-    break;
-
-  case ESP_ERR_ESPNOW_NO_MEM:
-    Serial.println("Out of memory");
-    break;
-
-  case ESP_ERR_ESPNOW_NOT_FOUND:
-    Serial.println("Peer is not found");
-    break;
-
-  case ESP_ERR_ESPNOW_IF:
-    Serial.println("Current WiFi interface doesn't match that of peer");
-    break;
-
-  default:
-    break;
-  }
-}
-static void send_msg(esp_now_msg_t *msg)
-{
-  // Pack
-  uint16_t packet_size = sizeof(esp_now_msg_t);
-  uint8_t msg_data[packet_size];
-  memcpy(&msg_data[0], msg, sizeof(esp_now_msg_t));
-
-  esp_err_t status = esp_now_send(broadcast_mac, msg_data, packet_size);
-  if (ESP_OK != status)
-  {
-    Serial.println("Error sending message");
-    handle_error(status);
-  }
-  Serial.println("Message sent!");
-}
-void message()
-{
-  static uint32_t counter = 0;
-  esp_now_msg_t msg;
-  msg.address = 0;
-  msg.counter = ++counter;
-  send_msg(&msg);
-  //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-}
-static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
-{
-  if (len == sizeof(esp_now_msg_t))
-  {
-    esp_now_msg_t msg;
-    memcpy(&msg, data, len);
-
-    Serial.print("Counter: ");
-    Serial.println(msg.counter);
-    //playTone();
-    //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-    message();
-  }
-}
-
-static void msg_send_cb(const uint8_t *mac, esp_now_send_status_t sendStatus)
-{
-
-  switch (sendStatus)
-  {
-  case ESP_NOW_SEND_SUCCESS:
-    Serial.println("Send success");
-    break;
-
-  case ESP_NOW_SEND_FAIL:
-    Serial.println("Send Failure");
-    break;
-
-  default:
-    break;
-  }
-}
 
 void lcdMessage(String msg)
 {
@@ -169,45 +83,7 @@ void lcdMessage(String msg)
   // //tft.fillScreen(TFT_BLACK);
   // tft.drawString(msg, tft.width()/4, tft.height() / 2, 4);  //string,start x,start y, font weight {1;2;4;6;7;8}
 }
-static void network_setup(void)
-{
-  //Puts ESP in STATION MODE
-  //WiFi.mode(WIFI_STA);
-  //WiFi.disconnect();
 
-  if (esp_now_init() != 0)
-  {
-    Serial.println("esp_now_init()!=0");
-    return;
-  }
-
-  esp_now_peer_info_t peer_info;
-  //peer_info.channel = WIFI_CHANNEL;
-  memcpy(peer_info.peer_addr, broadcast_mac, 6);
-  peer_info.ifidx = ESP_IF_WIFI_STA;
-  peer_info.encrypt = false;
-  esp_err_t status = esp_now_add_peer(&peer_info);
-  if (ESP_OK != status)
-  {
-    Serial.println("Could not add peer");
-    handle_error(status);
-  }
-
-  // Set up callback
-  status = esp_now_register_recv_cb(msg_recv_cb);
-  if (ESP_OK != status)
-  {
-    Serial.println("Could not register callback");
-    handle_error(status);
-  }
-
-  status = esp_now_register_send_cb(msg_send_cb);
-  if (ESP_OK != status)
-  {
-    Serial.println("Could not register send callback");
-    handle_error(status);
-  }
-}
 
 void setupWifi()
 {
@@ -242,10 +118,55 @@ void setupWifi()
   Serial.println(ip);
   lcdMessage(ip.toString());
 }
+String SendHTML(String message){
+  String ptr = "<!DOCTYPE html> <html>\n";
+  ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
+  ptr +="<title>LED Control</title>\n";
+  ptr +="<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}\n";
+  ptr +="body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;} h3 {color: #444444;margin-bottom: 50px;}\n";
+  ptr +=".button {display: block;width: 80px;background-color: #3498db;border: none;color: white;padding: 13px 30px;text-decoration: none;font-size: 25px;margin: 0px auto 35px;cursor: pointer;border-radius: 4px;}\n";
+  ptr +=".button-on {background-color: #3498db;}\n";
+  ptr +=".button-on:active {background-color: #2980b9;}\n";
+  ptr +=".button-off {background-color: #34495e;}\n";
+  ptr +=".button-off:active {background-color: #2c3e50;}\n";
+  ptr +="p {font-size: 14px;color: #888;margin-bottom: 10px;}\n";
+  ptr +="</style>\n";
+  ptr +="</head>\n";
+  ptr +="<body>\n";
+  ptr +="<h1>ESP32 Web Server</h1>\n";
+  ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
+  
+  {ptr +="<p>LED1 Status: ON</p><a class=\"button button-off\" href=\"/led1off\">OFF</a>\n";}
+
+  ptr +="</body>\n";
+  ptr +="</html>\n";
+  return ptr;
+
+}
+
+void sendReponse(void){
+ playTone();
+   //Serial.println("GPIO4 Status: OFF | GPIO5 Status: OFF");
+  server.send(200, "text/html", SendHTML("Hit!")); 
+}
+
+
+void handle_NotFound(){
+  server.send(404, "text/plain", "Not found");
+}
 
 void setup()
 {
-  // put your setup code here, to run once:
+
+#ifdef ENABLE_OLED
+  hasDisplay = display.init();
+  if (hasDisplay)
+  {
+    display.flipScreenVertically();
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+  }
+#endif
   lcdMessage("booting");
 
   Serial.begin(115200);
@@ -254,22 +175,47 @@ void setup()
     ;
   }
 
-  setupWifi();
-  network_setup();
-  Serial.println("Listening...");
-  //tft.init();
+ 
+  IPAddress ip;
+
+
+
+  WiFi.mode(WIFI_STA);
+
+  AutoWifi a;
+
+#ifdef FACTORYRESET_BUTTON
+  pinMode(FACTORYRESET_BUTTON, INPUT);
+  if (!digitalRead(FACTORYRESET_BUTTON)) // 1 means not pressed
+    a.resetProvisioning();
+#endif
+
+  if (!a.isProvisioned())
+    lcdMessage("Setup wifi!");
+  else
+    lcdMessage(String("join ") + a.getSSID());
+
+  a.startWifi();
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(F("."));
+  }
+  ip = WiFi.localIP();
+  Serial.println(F("WiFi connected"));
+  Serial.println(ip);
+
+  lcdMessage(ip.toString());
+  server.on("/", HTTP_GET, sendReponse);
+    server.onNotFound(handle_NotFound);
+  server.begin();
+  Serial.println("HTTP server started");
 }
 
 void loop()
 {
-  if (millis() >= time_now + 1000 + 1)
-  {
-    time_now += period;
-    //Serial.println("core 1 loop on reciever");
-    Serial.print("1.");
-    message();
-    //Serial.println(WiFi.channel());
-  }
+   server.handleClient();
 
   // // put your main code here, to run repeatedly:
   // tone(BUZZER_PIN, NOTE_C4, 500, BUZZER_CHANNEL);
